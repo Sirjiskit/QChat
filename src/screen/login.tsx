@@ -3,12 +3,14 @@ import { Box, Button, Heading, Icon, Link, Stack, Text, View, VStack } from "nat
 import React, { memo } from "react";
 import { useForm } from "react-hook-form";
 import { TouchableOpacity } from "react-native";
+import { SvgXml } from "react-native-svg";
 import { TextBox } from "../components/fields";
 import MyStatusBar from "../components/status-bar";
+import { logoSVG } from "../config/svgs";
 import { IDataSet, IUser } from "../interface";
 import { Styled } from "../styled";
 interface IFormData {
-    emailOrPhone: string;
+    email: string;
     password: string;
 }
 const LoginScreen = ({ navigation }: any) => {
@@ -23,7 +25,7 @@ const LoginScreen = ({ navigation }: any) => {
         register, formState: { errors }
     } = useForm<IFormData>({
         defaultValues: {
-            emailOrPhone: '',
+            email: '',
             password: '',
         },
     });
@@ -43,7 +45,7 @@ const LoginScreen = ({ navigation }: any) => {
         <Box style={Styled.container}>
             <VStack alignItems={'center'} px={5} style={Styled.w100}>
                 <Stack mb={5}>
-                    {/* <SvgXml xml={logoSVG} /> */}
+                    <SvgXml xml={logoSVG} />
                 </Stack>
                 <Stack>
                     <Heading textAlign={'center'} size={'lg'}>Log in!</Heading>
@@ -54,14 +56,14 @@ const LoginScreen = ({ navigation }: any) => {
                 <Stack style={[Styled.dFlex, Styled.dColumn, Styled.w100]} justifyContent={'flex-start'} px={4} py={2}>
                     <TextBox
                         control={control}
-                        name={"emailOrPhone"}
-                        title={"Email or Phone number"}
-                        placeholder={'Enter email or phone number'}
+                        name={"email"}
+                        title={"Email"}
+                        placeholder={'Enter email address'}
                         autoComplete={'username'}
                         required={true}
                         errors={
-                            errors.emailOrPhone?.type === 'required' ? 'Enter email or phone number' :
-                                (errors.emailOrPhone?.type === 'pattern' ? 'Enter a valid email or phone' : '')
+                            errors.email?.type === 'required' ? 'Enter email address' :
+                                (errors.email?.type === 'pattern' ? 'Enter a valid email address' : '')
                         }
                         icon={
                             <Icon
@@ -72,7 +74,7 @@ const LoginScreen = ({ navigation }: any) => {
                             />
                         }
                         returnKeyType={'next'}
-                        isInvalid={errors && errors?.emailOrPhone ? true : false}
+                        isInvalid={errors && errors?.email ? true : false}
                         isFocused={isFocused}
                         inputRef={usernameRef}
                     />

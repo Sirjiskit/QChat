@@ -35,7 +35,7 @@ const TextBox = (props: Props) => {
     return (
         <React.Fragment>
             <FormControl isInvalid={props.isInvalid} mt={3}>
-                <FormControl.Label _text={{bold:false}} fontFamily={'Montserrat'} fontSize={'600'} color={'#302E37'}>{props.title}</FormControl.Label>
+                <FormControl.Label _text={{bold:false}} fontFamily={'Poppins'} fontSize={'600'} color={'#302E37'}>{props.title}</FormControl.Label>
                 <Controller
                     control={props.control}
                     rules={{
