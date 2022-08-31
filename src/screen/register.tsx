@@ -1,6 +1,6 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { Box, Button, Heading, Icon, Link, ScrollView, Stack, Text, VStack } from "native-base";
 import React, { memo } from "react";
 import { useForm } from "react-hook-form";
@@ -8,11 +8,9 @@ import { Alert } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { ComboBox, TextBox } from "../components/fields";
 import MyStatusBar from "../components/status-bar";
-import { Colors } from "../config";
 import { DepartmentsList } from "../config/data";
 import { auth, db } from "../config/firebase";
 import { logoSVG } from "../config/svgs";
-import { IDataSet } from "../interface";
 import { Styled } from "../styled";
 interface IFormData {
     id?: any;
@@ -65,15 +63,18 @@ const RegisterScreen = ({ navigation }: any) => {
                 setLoading(false);
                 return false;
             }
-            const docRef = await addDoc(collection(db, "users"), {
+            const userRef = collection(db, "users");
+            await setDoc(doc(userRef, data.email), {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 email: data.email,
                 phoneNumber: data.phoneNumber,
                 dpm_id: data.dpm_id,
             });
-            if (docRef && docRef.id) {
+
+            if (userRef && userRef.id) {
                 Alert.alert('Success!', 'Registration successful');
+                reset({});
                 setLoading(false);
             } else {
                 Alert.alert('Error!', 'Registration failed');

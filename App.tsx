@@ -3,6 +3,8 @@ import { extendTheme, NativeBaseProvider } from 'native-base';
 import React from 'react';
 import App from './src';
 import 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
+import store from './src/app/store';
 export default function Main() {
   const [loaded] = useFonts({
     Poppins: require('./assets/fonts/Poppins-Regular.ttf'),
@@ -49,9 +51,11 @@ export default function Main() {
     return null;
   } else {
     return (
-      <NativeBaseProvider theme={theme}>
-        <App />
-      </NativeBaseProvider>
+      <Provider store={store}>
+          <NativeBaseProvider theme={theme}>
+            <App />
+          </NativeBaseProvider>
+        </Provider>
     );
   }
 }

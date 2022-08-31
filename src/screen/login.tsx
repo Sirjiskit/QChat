@@ -1,11 +1,17 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { Box, Button, Heading, Icon, Link, Stack, Text, View, VStack } from "native-base";
 import React, { memo } from "react";
 import { useForm } from "react-hook-form";
 import { TouchableOpacity } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { useAppDispatch } from "../app/hooks";
+import { loadCurrentUser } from "../app/reducer/auth.reducer";
 import { TextBox } from "../components/fields";
 import MyStatusBar from "../components/status-bar";
+import { auth, db } from "../config/firebase";
 import { logoSVG } from "../config/svgs";
 import { IDataSet, IUser } from "../interface";
 import { Styled } from "../styled";
@@ -13,11 +19,18 @@ interface IFormData {
     email: string;
     password: string;
 }
+interface IUserData {
+    dpm_id: number;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+}
 const LoginScreen = ({ navigation }: any) => {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [message, setMessage] = React.useState<string>('');
     const [isFocused] = React.useState<boolean>(true);
     const usernameRef = React.useRef<HTMLInputElement | null>(null);
+    const dispatch = useAppDispatch();
     const {
         control,
         handleSubmit,
@@ -35,11 +48,52 @@ const LoginScreen = ({ navigation }: any) => {
             username: '',
             password: '',
         };
+        setLoading(false);
         reset({ ...defaultValue });
     }, [reset]);
     const onSubmit = async (data: IFormData) => {
-       
+        setLoading(true);
+        setMessage('');
+        try {
+            signInWithEmailAndPassword(auth, data.email, data.password).then(async (res) => {
+                const user = await users(data.email);
+                const newData = res.user as any;
+                const loger: IUser = {
+                    uuid: newData.uid,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: data.email,
+                    phoneNumber: user.phoneNumber,
+                    avatar: newData.photoURL as string,
+                    createdAt: newData?.createdAt,
+                    department: user.dpm_id
+                }
+                await AsyncStorage.setItem('@UserLogger', JSON.stringify(user));
+                dispatch(loadCurrentUser());
+                navigation.navigate('Home');
+                reset({});
+                setLoading(false);
+            }).catch((error) => {
+                setLoading(false);
+                reset({});
+                setMessage('Invalid username or password');
+            });
+        } catch (e) {
+            setMessage('Unknown error occurred');
+            setLoading(false);
+        }
     }
+    const users = (email: string) => {
+        const docRef = doc(db, "users", email);
+        return new Promise<IUserData>(async (r, j) => {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                r(docSnap.data() as any);
+            } else {
+                j(false);
+            }
+        });
+    };
     return (<React.Fragment>
         <MyStatusBar />
         <Box style={Styled.container}>
