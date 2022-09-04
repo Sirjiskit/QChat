@@ -18,3 +18,7 @@ export const DepartmentsList: Array<IComboBox> = [
     { value: 15, label: 'Science Laboratory Technology' },
     { value: 16, label: 'Statistics' },
 ];
+export const getDpmById = (id: any) => {
+    const dpm = DepartmentsList.slice().filter((x: IComboBox) => x.value == id);
+    return dpm.length > 0 ? dpm[0].label : 'Unknown';
+}

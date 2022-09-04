@@ -70,11 +70,21 @@ const RegisterScreen = ({ navigation }: any) => {
                 email: data.email,
                 phoneNumber: data.phoneNumber,
                 dpm_id: data.dpm_id,
+                avatar: data.avatar ? data.avatar : 'https://gravatar.com/avatar/94d45dbdba988afacf30d916e7aaad69?s=200&d=mp&r=x',
+                createdAt: new Date()
             });
 
             if (userRef && userRef.id) {
                 Alert.alert('Success!', 'Registration successful');
-                reset({});
+                reset({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    phoneNumber: '',
+                    dpm_id: '',
+                    password: '',
+                    avatar: ''
+                });
                 setLoading(false);
             } else {
                 Alert.alert('Error!', 'Registration failed');

@@ -5,6 +5,10 @@ import App from './src';
 import 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import store from './src/app/store';
+import * as SplashScreen from 'expo-splash-screen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 export default function Main() {
   const [loaded] = useFonts({
     Poppins: require('./assets/fonts/Poppins-Regular.ttf'),
@@ -52,10 +56,12 @@ export default function Main() {
   } else {
     return (
       <Provider store={store}>
+        <SafeAreaProvider>
           <NativeBaseProvider theme={theme}>
             <App />
           </NativeBaseProvider>
-        </Provider>
+        </SafeAreaProvider>
+      </Provider>
     );
   }
 }

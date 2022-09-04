@@ -29,7 +29,7 @@ const Styled = StyleSheet.create({
     },
     content: {
         flex: 1,
-        backgroundColor: Colors.white
+        // backgroundColor: Colors.white
     },
     stackJustifyCenter: {
         width: '100%',
@@ -58,6 +58,10 @@ const Styled = StyleSheet.create({
     bgPrimary: {
         flex: 1,
         backgroundColor: Colors.primary600
+    },
+    bgWhite: {
+        flex: 1,
+        backgroundColor: Colors.white
     },
     header: {
         width: '100%',

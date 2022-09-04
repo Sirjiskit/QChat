@@ -68,7 +68,7 @@ const LoginScreen = ({ navigation }: any) => {
                     createdAt: newData?.createdAt,
                     department: user.dpm_id
                 }
-                await AsyncStorage.setItem('@UserLogger', JSON.stringify(user));
+                await AsyncStorage.setItem('@UserLogger', JSON.stringify(loger));
                 dispatch(loadCurrentUser());
                 navigation.navigate('Home');
                 reset({});
