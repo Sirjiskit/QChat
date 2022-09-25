@@ -1,11 +1,12 @@
-import { addDoc, collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { addDoc, collection, getDoc, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { Avatar, HStack, Text, View } from "native-base";
 import React, { memo } from "react";
 import { ImageBackground, StatusBar } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import { Colors } from "../config";
-import { auth, db } from "../config/firebase";
-import { getDocs } from "firebase/firestore";
+import { auth, db, firestore } from "../config/firebase";
+import { getDocs, doc } from "firebase/firestore";
+import { TabRouter } from "@react-navigation/native";
 const ChatScreen = ({ navigation, route }: any) => {
     const { data } = route.params;
     const [messages, setMessages] = React.useState<any>([]);
@@ -23,8 +24,6 @@ const ChatScreen = ({ navigation, route }: any) => {
         });
     }, [navigation]);
     React.useLayoutEffect(() => {
-        // const q = query(collection(db, 'chats'),
-        //     where('chatId', '==', `${auth.currentUser?.email}${data.email}`));
         const q = query(collection(db, 'chats'), orderBy('createdAt', 'desc'));
         const unsubscribe = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
             const chats: any = [];
@@ -41,6 +40,7 @@ const ChatScreen = ({ navigation, route }: any) => {
                             name: doc.data().sender == auth?.currentUser?.email ? auth?.currentUser?.displayName : `${data.lastName} ${data.firstName}`
                         },
                     });
+                    update(doc.id);
                 }
             });
             setMessages(chats);
@@ -49,19 +49,19 @@ const ChatScreen = ({ navigation, route }: any) => {
         return () => {
             unsubscribe();
         };
-        // setMessages([
-        //     {
-        //         _id: 1,
-        //         text: 'Hello developer',
-        //         createdAt: new Date(),
-        //         user: {
-        //             _id: 2,
-        //             name: 'React Native',
-        //             avatar: 'https://placeimg.com/140/140/any',
-        //         },
-        //     },
-        // ])
     }, []);
+    const update = async (id: any) => {
+        const chatRef = doc(db, "chats", id);
+        const docSnap = await getDoc(chatRef);
+        if (docSnap.exists()) {
+            await updateDoc(chatRef, {
+                read: true
+            })
+        } else {
+            console.log("No such document! " + id);
+        }
+
+    }
     const onChange = (text: string) => {
         if (text) {
             setTyping(true);

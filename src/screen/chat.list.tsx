@@ -6,10 +6,23 @@ import { IChatsList } from "../interface/chats.list";
 import { myChartList } from "../app/data/list";
 import { FlatList, SafeAreaView } from "react-native";
 import { auth, db } from "../config/firebase";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, orderBy, query } from "firebase/firestore";
+import { getDpmById, getLevelById } from "../config/data";
+const users = () => {
+    const docRef = doc(db, "users", `${auth.currentUser?.email}`);
+    return new Promise<any>(async (r, j) => {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            r(docSnap.data() as any);
+        } else {
+            j(false);
+        }
+    });
+};
 const ChatListScreen = ({ navigation, route }: any) => {
     const [isLoading, setLoading] = React.useState<boolean>(true);
     const [list, setList] = React.useState<Array<IChatsList>>([]);
+    const [data, setData] = React.useState<any>();
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Chat',
@@ -24,9 +37,11 @@ const ChatListScreen = ({ navigation, route }: any) => {
         };
     }, [navigation]);
     const loadData = async () => {
+        setData(await users());
         setList(await myChartList() as Array<IChatsList>);
         setLoading(false);
     }
+    const avatar = 'https://gravatar.com/avatar/94d45dbdba988afacf30d916e7aaad69?s=200&d=mp&r=x';
     return (
         <React.Fragment>
             <SafeAreaView>
@@ -55,6 +70,23 @@ const ChatListScreen = ({ navigation, route }: any) => {
                         }
                         keyExtractor={item => item.chatId}
                         ItemSeparatorComponent={() => <Divider />}
+                        ListHeaderComponent={() =>
+                            <Pressable onPress={() =>
+                                navigation.navigate('GroupChats', {
+                                    data: { chatId: `${data?.dpm_id}${data?.level}`, dpm: `${getDpmById(data?.dpm_id)}`, level: `${getLevelById(data?.level)}` }
+                                })}>
+                                <VStack>
+                                    <HStack space={5} my={2}>
+                                        <Avatar source={{ uri: avatar }} />
+                                        <VStack justifyContent={'center'}>
+                                            <Text numberOfLines={1} fontWeight={'semibold'} fontSize={'lg'}>{getDpmById(data?.dpm_id)}</Text>
+                                            <Text>{getLevelById(data?.level)}</Text>
+                                        </VStack>
+                                    </HStack>
+                                    <Divider />
+                                </VStack>
+                            </Pressable>
+                        }
                     />
                 </Box>
             </SafeAreaView>

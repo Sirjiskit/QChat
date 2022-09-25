@@ -22,3 +22,14 @@ export const getDpmById = (id: any) => {
     const dpm = DepartmentsList.slice().filter((x: IComboBox) => x.value == id);
     return dpm.length > 0 ? dpm[0].label : 'Unknown';
 }
+export const LevelList: Array<IComboBox> = [
+    { value: 1, label: 'ND 1' },
+    { value: 2, label: 'ND 2' },
+    { value: 3, label: 'HND 1' },
+    { value: 4, label: 'HND 2' },
+    { value: 5, label: 'CERT.' }
+];
+export const getLevelById = (id: any) => {
+    const dpm = LevelList.slice().filter((x: IComboBox) => x.value == id);
+    return dpm.length > 0 ? dpm[0].label : 'Unknown';
+}

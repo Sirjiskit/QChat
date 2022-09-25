@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from '@react-navigation/stack';
-import { ChatScreen, HomeScreen, LoginScreen, RegisterScreen } from "../../screen";
+import { ChatScreen, GroupChatScreen, HomeScreen, LoginScreen, RegisterScreen } from "../../screen";
 import { useAppSelector } from "../../app/hooks";
 import * as SplashScreen from 'expo-splash-screen';
 import ContactsScreen from "../../screen/contacts";
@@ -38,6 +38,11 @@ const MyStack = () => {
                     <Stack.Screen
                         name="Chats"
                         component={ChatScreen}
+                        options={{ headerShown: true, title: 'Chat' }}
+                    />
+                     <Stack.Screen
+                        name="GroupChats"
+                        component={GroupChatScreen}
                         options={{ headerShown: true, title: 'Chat' }}
                     />
                 </Stack.Group>
