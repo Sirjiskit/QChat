@@ -19,6 +19,7 @@ interface IFormData {
     email: string;
     phoneNumber: string;
     dpm_id: any;
+    level: any;
     password: string;
     avatar: string;
 }
@@ -38,6 +39,7 @@ const RegisterScreen = ({ navigation }: any) => {
             phoneNumber: '',
             email: '',
             dpm_id: '',
+            level:1,
             password: '',
             avatar: ''
         },
@@ -49,6 +51,7 @@ const RegisterScreen = ({ navigation }: any) => {
             email: '',
             phoneNumber: '',
             dpm_id: '',
+            level:'',
             password: '',
             avatar: ''
         };
@@ -70,6 +73,7 @@ const RegisterScreen = ({ navigation }: any) => {
                 email: data.email,
                 phoneNumber: data.phoneNumber,
                 dpm_id: data.dpm_id,
+                level: data.level,
                 avatar: data.avatar ? data.avatar : 'https://gravatar.com/avatar/94d45dbdba988afacf30d916e7aaad69?s=200&d=mp&r=x',
                 createdAt: new Date()
             });
@@ -82,6 +86,7 @@ const RegisterScreen = ({ navigation }: any) => {
                     email: '',
                     phoneNumber: '',
                     dpm_id: '',
+                    level:'',
                     password: '',
                     avatar: ''
                 });
@@ -242,6 +247,18 @@ const RegisterScreen = ({ navigation }: any) => {
                                 isInvalid={errors && errors?.dpm_id ? true : false}
                                 errors={
                                     errors.dpm_id?.type === 'required' ? 'Please select department' : ''
+                                }
+                            />
+                            <ComboBox title={"Level"}
+                                control={control}
+                                name={"level"}
+                                placeholder={'Select one'}
+                                required={true}
+                                data={[{value:1,label:'ND 1'},{value:2,label:'ND 2'},{value:3,label:'HND 1'},{value:4,label:'HND 2'},{value:5,label:'Cert'}]}
+                                // onChange={onSelect}
+                                isInvalid={errors && errors?.level ? true : false}
+                                errors={
+                                    errors.level?.type === 'required' ? 'Please select level' : ''
                                 }
                             />
                             <TextBox
