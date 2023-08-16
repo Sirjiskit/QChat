@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query } from "firebase/firestore";
+import { addDoc, collection,onSnapshot, orderBy, query } from "firebase/firestore";
 import { Avatar, HStack, Text, VStack } from "native-base";
 import React, { memo } from "react";
 import { ImageBackground, StatusBar, View } from "react-native";

@@ -4,15 +4,27 @@ import React, { memo } from "react";
 import { ImageBackground, StatusBar } from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
 import { Colors } from "../config";
-import { auth, db, firestore } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import { getDocs, doc } from "firebase/firestore";
-import { TabRouter } from "@react-navigation/native";
+const users = () => {
+    const docRef = doc(db, "users", `${auth.currentUser?.email}`);
+    return new Promise<any>(async (r, j) => {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            r(docSnap.data() as any);
+        } else {
+            j(false);
+        }
+    });
+};
 const ChatScreen = ({ navigation, route }: any) => {
     const { data } = route.params;
+    const [uData, setUData] = React.useState<any>();
     const [messages, setMessages] = React.useState<any>([]);
     const [isLoading, setLoading] = React.useState<boolean>(true);
     const [isTyping, setTyping] = React.useState<boolean>(true);
     React.useLayoutEffect(() => {
+        loadUser();
         navigation.setOptions({
             headerTitle: () => (
                 <HStack style={{ marginLeft: 0 }} justifyContent={'center'} fontWeight={'bold'} fontSize={'lg'} alignItems={'center'} space={3}>
@@ -22,7 +34,11 @@ const ChatScreen = ({ navigation, route }: any) => {
                 </HStack>
             ),
         });
+
     }, [navigation]);
+    const loadUser = async () => {
+        setUData(await users());
+    }
     React.useLayoutEffect(() => {
         const q = query(collection(db, 'chats'), orderBy('createdAt', 'desc'));
         const unsubscribe = onSnapshot(q, { includeMetadataChanges: true }, (snapshot) => {
@@ -36,7 +52,7 @@ const ChatScreen = ({ navigation, route }: any) => {
                         // user: doc.data().user
                         user: {
                             _id: doc.data().sender == auth?.currentUser?.email ? auth?.currentUser?.email : data.email,
-                            avatar: doc.data().sender == auth?.currentUser?.email ? auth?.currentUser?.photoURL : data.avatar,
+                            avatar: doc.data().sender == auth?.currentUser?.email ? uData?.avatar : data.avatar,
                             name: doc.data().sender == auth?.currentUser?.email ? auth?.currentUser?.displayName : `${data.lastName} ${data.firstName}`
                         },
                     });
@@ -71,7 +87,6 @@ const ChatScreen = ({ navigation, route }: any) => {
         }
     };
     const onSend = React.useCallback((messages = []) => {
-        // setMessages((previousMessages: never[] | undefined) => GiftedChat.append(previousMessages, messages))
         const { _id, createdAt, text, user, } = messages[0];
         const chatId = `${auth.currentUser?.email}${data.email}`;
         const chatId2 = `${data.email}${auth.currentUser?.email}`;
@@ -104,6 +119,7 @@ const ChatScreen = ({ navigation, route }: any) => {
         });
     };
     const img = require('./../../assets/bg.png');
+   
     return (
 
         <ImageBackground source={img} style={{ flex: 1 }}>
@@ -123,15 +139,7 @@ const ChatScreen = ({ navigation, route }: any) => {
                         (text) => onChange(text)
                     }
                     isTyping={isTyping}
-                // parsePatterns={(linkStyle) => [
-                //     { type: 'phone', style: linkStyle, onPress: this.onPressPhoneNumber },
-                //     { pattern: /#(\w+)/, style: { ...linkStyle, styles.hashtag }, onPress: this.onPressHashtag },
-                //   ]}
                 />
-                {/* {
-                Platform.OS === 'android' &&
-                <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={50} />
-            } */}
             </View>
         </ImageBackground>
 
